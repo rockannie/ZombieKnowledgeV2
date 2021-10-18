@@ -6,14 +6,18 @@ public class knightController : MonoBehaviour
 {
     public float speed;
 
+    private bool studying = false;
+
     [SerializeField] private Animator anim;
     private knightUIController UIscript;
 
-    private zombieSpawner ZUIScript;
+    [SerializeField] private GameObject ZUIObj;
+    private zombieUIController zombUICont;
     
     void Start()
     {
         UIscript = GetComponentInChildren<knightUIController>();
+        zombUICont = ZUIObj.GetComponentInChildren<zombieUIController>();
     }
     
     void Update()
@@ -69,13 +73,14 @@ public class knightController : MonoBehaviour
     private void Attack()
     {
         anim.SetBool("isAttacking", true);
-        //set zombie health -= 50 
+        zombUICont.setHealth(-50);
     }
 
     //function to give brains to zombie to recruit
     private void giveBrain()
     {
         UIscript.setBrain(-25);
+        zombUICont.setBrain(25);
     }
     //detecting zombie collisions and assigning what happens
     private void OnCollisionStay2D(Collision2D other)
@@ -91,6 +96,46 @@ public class knightController : MonoBehaviour
                 giveBrain();
             }
             //UIscript.setHealth(-10);
+        }
+
+        /*if (other.gameObject.tag == "Library")
+        {
+            StartCoroutine(Studying());
+            studying = true;
+        }
+        else
+        {
+            studying = false;
+        }*/
+    }
+
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        if (other.gameObject.tag == "Library")
+        {
+            studying = true;
+            StartCoroutine(Studying());
+        }
+        else
+        {
+            studying = false;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.gameObject.tag == "Library")
+        {
+            studying = false;
+        }
+    }
+
+    IEnumerator Studying()
+    {
+        while (studying)
+        {
+            UIscript.setBrain(10);
+            yield return new WaitForSeconds(.2f);
         }
     }
 }

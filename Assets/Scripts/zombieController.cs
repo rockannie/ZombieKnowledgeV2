@@ -25,6 +25,8 @@ public class zombieController : MonoBehaviour
 
     public knightUIController KUIController;
 
+    private zombieUIController zombUIController;
+    
     private Vector3 lastKnightPos;
 
     //setting up astar objects
@@ -64,6 +66,7 @@ public class zombieController : MonoBehaviour
     
     void Start()
     {
+        zombUIController = GetComponentInChildren<zombieUIController>();
         //tilemap a* set-up
         lastKnightPos = knight.position;
         walkableTilemap.CompressBounds();
@@ -135,17 +138,15 @@ public class zombieController : MonoBehaviour
 
     private void Idling()
     {
-        //if (roadPath != null && roadPath.Count > 0)
-            //roadPath.Clear();
-        List<Spot> lastRoadPath = roadPath;
-        roadPath = astar.CreatePath(walkableArea, GridPositionOfZombie, GridPositionOfRandom);
-        if (roadPath == null)
+        if (knight.position != lastKnightPos)
         {
-            Debug.Log("roadPath is empty for IDLING ZOMBIE");
-            return;
-        }
-        if (lastRoadPath != roadPath) 
-        {
+            roadPath = astar.CreatePath(walkableArea, GridPositionOfZombie, GridPositionOfRandom);
+            if (roadPath == null)
+            {
+                Debug.Log("roadPath is empty for IDLING ZOMBIE");
+                return;
+            }
+
             StartCoroutine(keepMoving(roadPath));
         }
     }
@@ -162,7 +163,7 @@ public class zombieController : MonoBehaviour
     {
         //if (roadPath != null && roadPath.Count > 0)
             //roadPath.Clear();
-        if (roadPath == null)
+        if (knight.position != lastKnightPos)
         {
             roadPath = astar.CreatePath(walkableArea, GridPositionOfZombie, GridPositionOfKnight);
             if (roadPath == null)
@@ -170,11 +171,9 @@ public class zombieController : MonoBehaviour
                 Debug.Log("roadPath is empty for CHASEKNIGHT ZOMBIE");
                 return;
             }
-
             StartCoroutine(keepMoving(roadPath));
         }
         
-
         float attack = 1f;
         if (Vector3.Distance(transform.position, knight.position) < attack)
         {
@@ -199,7 +198,13 @@ public class zombieController : MonoBehaviour
 
     private void BeFriend()
     {
-        //follow knight
+        float tempBrain = zombUIController.getBrain;
+        if (tempBrain < 50)
+        {
+            state = State.Idle;
+        }
+        //use astar to follow knight but the astar thing isn't working so fuck it
+        //transform.position = knight.transform.position;
     }
     IEnumerator keepMoving(List<Spot> my_path)
     {

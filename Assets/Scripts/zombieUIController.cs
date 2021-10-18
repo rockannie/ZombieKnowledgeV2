@@ -8,8 +8,8 @@ public class zombieUIController : MonoBehaviour
     [SerializeField] private Slider healthbar;
     [SerializeField] private Slider brainbar;
 
-    private int maxHealth = 50;
-    private int maxBrain = 25;
+    private int maxHealth = 100;
+    private int maxBrain = 100;
     
     // Start is called before the first frame update
     void Start()
