@@ -3,19 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class knightUIController : MonoBehaviour
+public class zombieUIController : MonoBehaviour
 {
     [SerializeField] private Slider healthbar;
     [SerializeField] private Slider brainbar;
+
+    private int maxHealth = 50;
+    private int maxBrain = 25;
     
-    private int maxHealth = 100;
-    [SerializeField] private int maxBrain = 100;
+    // Start is called before the first frame update
     void Start()
     {
         healthbar.maxValue = maxHealth;
         brainbar.maxValue = maxBrain;
     }
-    
+
+    // Update is called once per frame
     void Update()
     {
         
@@ -25,6 +28,7 @@ public class knightUIController : MonoBehaviour
     {
         get { return healthbar.value; }
     }
+    
     public void setHealth(int newHealth)
     {
         healthbar.value += newHealth;

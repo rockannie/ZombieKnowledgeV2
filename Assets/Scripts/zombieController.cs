@@ -12,7 +12,8 @@ public class zombieController : MonoBehaviour
     {
         Idle,
         ChaseTarget,
-        Attack
+        Attack, 
+        BeFriend
     }
 
     private State state;
@@ -33,7 +34,7 @@ public class zombieController : MonoBehaviour
     private Vector3Int direction;
     private List<Spot> roadPath = new List<Spot>();
     
-    //functions to find grid position of knight + zombie 
+    //methods to find grid position of knight + zombie 
     private Vector2Int GridPositionOfKnight
     {
         get
@@ -106,6 +107,9 @@ public class zombieController : MonoBehaviour
             case State.Attack:
                 AttackKnight();
                 break;
+            case State.BeFriend:
+                BeFriend();
+                break;
         }
         //check if knight has moved and start coroutine
         /*if (knight.position != lastKnightPos)
@@ -131,14 +135,19 @@ public class zombieController : MonoBehaviour
 
     private void Idling()
     {
+        //if (roadPath != null && roadPath.Count > 0)
+            //roadPath.Clear();
+        List<Spot> lastRoadPath = roadPath;
         roadPath = astar.CreatePath(walkableArea, GridPositionOfZombie, GridPositionOfRandom);
         if (roadPath == null)
         {
             Debug.Log("roadPath is empty for IDLING ZOMBIE");
             return;
         }
-        
-        StartCoroutine(keepMoving(roadPath));
+        if (lastRoadPath != roadPath) 
+        {
+            StartCoroutine(keepMoving(roadPath));
+        }
     }
 
     private void FindTarget()
@@ -151,16 +160,20 @@ public class zombieController : MonoBehaviour
     }
     private void ChaseKnight()
     {
-        if (roadPath != null && roadPath.Count > 0)
-            roadPath.Clear();
-        roadPath = astar.CreatePath(walkableArea, GridPositionOfZombie, GridPositionOfKnight);
+        //if (roadPath != null && roadPath.Count > 0)
+            //roadPath.Clear();
         if (roadPath == null)
         {
-            Debug.Log("roadPath is empty for CHASEKNIGHT ZOMBIE");
-            return;
-        }
+            roadPath = astar.CreatePath(walkableArea, GridPositionOfZombie, GridPositionOfKnight);
+            if (roadPath == null)
+            {
+                Debug.Log("roadPath is empty for CHASEKNIGHT ZOMBIE");
+                return;
+            }
 
-        StartCoroutine(keepMoving(roadPath));
+            StartCoroutine(keepMoving(roadPath));
+        }
+        
 
         float attack = 1f;
         if (Vector3.Distance(transform.position, knight.position) < attack)
@@ -182,6 +195,11 @@ public class zombieController : MonoBehaviour
         {
             state = State.ChaseTarget;
         }
+    }
+
+    private void BeFriend()
+    {
+        //follow knight
     }
     IEnumerator keepMoving(List<Spot> my_path)
     {

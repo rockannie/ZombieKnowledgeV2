@@ -8,6 +8,8 @@ public class knightController : MonoBehaviour
 
     [SerializeField] private Animator anim;
     private knightUIController UIscript;
+
+    private zombieSpawner ZUIScript;
     
     void Start()
     {
@@ -61,15 +63,6 @@ public class knightController : MonoBehaviour
             anim.SetBool("isMoving", false);
         }
         
-        //after moving, check for attacking and givebrain keystrokes
-        /*if (Input.GetKey(KeyCode.V))
-        {
-            Attack();
-        }
-        else if (Input.GetKey(KeyCode.B))
-        {
-            giveBrain();
-        }*/
     }
 
     //function to attack zombies
