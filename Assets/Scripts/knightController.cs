@@ -97,7 +97,7 @@ public class knightController : MonoBehaviour
             {
                 giveBrain();
             }
-            UIscript.setHealth(-10);
+            //UIscript.setHealth(-10);
         }
     }
 }

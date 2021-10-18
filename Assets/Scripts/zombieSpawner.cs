@@ -13,12 +13,15 @@ public class zombieSpawner : MonoBehaviour
     
     [SerializeField] private GameObject zombie;
     [SerializeField] private Transform knightie;
-
+    
     [SerializeField] private Animator anim;
-
-    // Start is called before the first frame update
+    [SerializeField] private GameObject knightiepoo;
+    
+    private knightUIController knightUICont;
+    
     void Start()
     {
+        knightUICont = knightiepoo.GetComponent<knightUIController>();
         StartCoroutine(makeZombs());
     }
 
@@ -32,14 +35,15 @@ public class zombieSpawner : MonoBehaviour
             newZomb.SetActive(true);
             newZomb.GetComponent<zombieController>().knight = knightie;
             newZomb.GetComponent<zombieController>().walkableTilemap = walkieTilemap;
+            newZomb.GetComponent<zombieController>().KUIController = knightUICont;
             i++;
         }
 
         numZombs++;
-        yield return new WaitForSeconds(30f);
+        yield return new WaitForSeconds(60f);
         StartCoroutine(makeZombs());
     }
-    // Update is called once per frame
+
     void Update()
     {
         

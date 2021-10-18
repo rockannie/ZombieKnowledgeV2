@@ -3,16 +3,29 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using Random = UnityEngine.Random;
 
 public class zombieController : MonoBehaviour
 {
+    //setting up state machine
+    private enum State
+    {
+        Idle,
+        ChaseTarget,
+        Attack
+    }
+
+    private State state;
+
     //gameobjects 
     public Transform knight;
 
     public Tilemap walkableTilemap;
 
+    public knightUIController KUIController;
+
     private Vector3 lastKnightPos;
-    
+
     //setting up astar objects
     private Vector3Int[,] walkableArea;
     private Astar astar;
@@ -34,6 +47,17 @@ public class zombieController : MonoBehaviour
         get
         {
             return (Vector2Int) walkableTilemap.WorldToCell(transform.position);
+        }
+    }
+
+    private Vector2Int GridPositionOfRandom
+    {
+        get
+        {
+            var gridSize = walkableTilemap.size;
+            var randomPos = new Vector3Int(Random.Range(-gridSize.x, gridSize.x), Random.Range(-gridSize.y, gridSize.y),
+                Random.Range(gridSize.z, gridSize.z));
+            return (Vector2Int) walkableTilemap.WorldToCell(randomPos);
         }
     }
     
@@ -69,8 +93,22 @@ public class zombieController : MonoBehaviour
     
     void Update()
     {
+        switch (state)
+        {
+            default:
+            case State.Idle:
+                Idling();
+                FindTarget();
+                break;
+            case State.ChaseTarget:
+                ChaseKnight();
+                break;
+            case State.Attack:
+                AttackKnight();
+                break;
+        }
         //check if knight has moved and start coroutine
-        if (knight.position != lastKnightPos)
+        /*if (knight.position != lastKnightPos)
         {
             if (roadPath != null && roadPath.Count > 0)
                 roadPath.Clear();
@@ -82,7 +120,7 @@ public class zombieController : MonoBehaviour
             }
 
             StartCoroutine(keepMoving(roadPath));
-        }
+        }*/
         //lastKnightPos = knight.position;
     }
 
@@ -91,11 +129,65 @@ public class zombieController : MonoBehaviour
         lastKnightPos = knight.position;
     }
 
+    private void Idling()
+    {
+        roadPath = astar.CreatePath(walkableArea, GridPositionOfZombie, GridPositionOfRandom);
+        if (roadPath == null)
+        {
+            Debug.Log("roadPath is empty for IDLING ZOMBIE");
+            return;
+        }
+        
+        StartCoroutine(keepMoving(roadPath));
+    }
+
+    private void FindTarget()
+    {
+        float targetRange = 5f;
+        if (Vector3.Distance(transform.position, knight.position) < targetRange)
+        {
+            state = State.ChaseTarget;
+        }
+    }
+    private void ChaseKnight()
+    {
+        if (roadPath != null && roadPath.Count > 0)
+            roadPath.Clear();
+        roadPath = astar.CreatePath(walkableArea, GridPositionOfZombie, GridPositionOfKnight);
+        if (roadPath == null)
+        {
+            Debug.Log("roadPath is empty for CHASEKNIGHT ZOMBIE");
+            return;
+        }
+
+        StartCoroutine(keepMoving(roadPath));
+
+        float attack = 1f;
+        if (Vector3.Distance(transform.position, knight.position) < attack)
+        {
+            state = State.Attack;
+        }
+        float stopChasing = 10f;
+        if (Vector3.Distance(transform.position, knight.position) > stopChasing)
+        {
+            state = State.Idle;
+        }
+    }
+
+    private void AttackKnight()
+    {
+        KUIController.setHealth(-10);
+        float startChasing = 1f;
+        if (Vector3.Distance(transform.position, knight.position) > startChasing)
+        {
+            state = State.ChaseTarget;
+        }
+    }
     IEnumerator keepMoving(List<Spot> my_path)
     {
         for (int i = 0; i < my_path.Count; i++)
         {
-            direction = new Vector3Int(roadPath[i].X, roadPath[i].Y, 0);
+            direction = new Vector3Int(my_path[i].X, my_path[i].Y, 0);
             Vector3 temp = walkableTilemap.GetCellCenterWorld(direction);
             transform.position = temp;
             yield return new WaitForSeconds(.3f);
