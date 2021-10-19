@@ -16,6 +16,7 @@ public class zombieUIController : MonoBehaviour
     {
         healthbar.maxValue = maxHealth;
         brainbar.maxValue = maxBrain;
+        brainbar.value = 0;
     }
 
     // Update is called once per frame

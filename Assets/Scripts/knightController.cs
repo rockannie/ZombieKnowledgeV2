@@ -134,8 +134,8 @@ public class knightController : MonoBehaviour
     {
         while (studying)
         {
-            UIscript.setBrain(10);
-            yield return new WaitForSeconds(.2f);
+            UIscript.setBrain(1);
+            yield return new WaitForSeconds(1f);
         }
     }
 }

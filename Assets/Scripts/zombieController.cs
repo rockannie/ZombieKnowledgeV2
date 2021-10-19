@@ -18,6 +18,19 @@ public class zombieController : MonoBehaviour
 
     private State state;
 
+    private State StateEnum
+    {
+        get { return state; }
+        set
+        {
+            if (state != value)
+            {
+                Debug.Log($"going from {state} to {value}");
+                state = value;
+            }
+        }
+    }
+
     //gameobjects 
     public Transform knight;
 
@@ -28,6 +41,22 @@ public class zombieController : MonoBehaviour
     private zombieUIController zombUIController;
     
     private Vector3 lastKnightPos;
+
+    private Coroutine coroutinevar;
+
+    private Coroutine MovementCoroutine
+    {
+        get { return coroutinevar;}
+        set
+        {
+            if (coroutinevar != null)
+            {
+                StopCoroutine(coroutinevar);
+            }
+
+            coroutinevar = value;
+        }
+    }
 
     //setting up astar objects
     private Vector3Int[,] walkableArea;
@@ -143,11 +172,11 @@ public class zombieController : MonoBehaviour
             roadPath = astar.CreatePath(walkableArea, GridPositionOfZombie, GridPositionOfRandom);
             if (roadPath == null)
             {
-                Debug.Log("roadPath is empty for IDLING ZOMBIE");
+                //Debug.Log("roadPath is empty for IDLING ZOMBIE");
                 return;
             }
-
-            StartCoroutine(keepMoving(roadPath));
+            
+            MovementCoroutine = StartCoroutine(keepMoving(roadPath));
         }
     }
 
@@ -156,7 +185,7 @@ public class zombieController : MonoBehaviour
         float targetRange = 5f;
         if (Vector3.Distance(transform.position, knight.position) < targetRange)
         {
-            state = State.ChaseTarget;
+            StateEnum = State.ChaseTarget;
         }
     }
     private void ChaseKnight()
@@ -171,18 +200,20 @@ public class zombieController : MonoBehaviour
                 Debug.Log("roadPath is empty for CHASEKNIGHT ZOMBIE");
                 return;
             }
-            StartCoroutine(keepMoving(roadPath));
+            
+            MovementCoroutine = StartCoroutine(keepMoving(roadPath));
+            
         }
         
         float attack = 1f;
         if (Vector3.Distance(transform.position, knight.position) < attack)
         {
-            state = State.Attack;
+            StateEnum = State.Attack;
         }
         float stopChasing = 10f;
         if (Vector3.Distance(transform.position, knight.position) > stopChasing)
         {
-            state = State.Idle;
+            StateEnum = State.Idle;
         }
     }
 
@@ -192,7 +223,7 @@ public class zombieController : MonoBehaviour
         float startChasing = 1f;
         if (Vector3.Distance(transform.position, knight.position) > startChasing)
         {
-            state = State.ChaseTarget;
+            StateEnum = State.ChaseTarget;
         }
     }
 
@@ -201,7 +232,7 @@ public class zombieController : MonoBehaviour
         float tempBrain = zombUIController.getBrain;
         if (tempBrain < 50)
         {
-            state = State.Idle;
+            StateEnum = State.Idle;
         }
         //use astar to follow knight but the astar thing isn't working so fuck it
         //transform.position = knight.transform.position;
