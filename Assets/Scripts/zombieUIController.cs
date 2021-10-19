@@ -16,13 +16,17 @@ public class zombieUIController : MonoBehaviour
     {
         healthbar.maxValue = maxHealth;
         brainbar.maxValue = maxBrain;
+        healthbar.value = 100;
         brainbar.value = 0;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if (healthbar.value == 0)
+        {
+            Destroy(transform.parent.gameObject);
+        }
     }
 
     public float getHealth

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4288914761774629311}
   - component: {fileID: 4288914761774629308}
   - component: {fileID: 4288914761774629309}
-  - component: {fileID: 4288914761774629310}
+  - component: {fileID: 4110233370026113721}
   m_Layer: 5
   m_Name: infoBars
   m_TagString: Untagged
@@ -38,7 +38,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0.01, y: 0.56}
+  m_AnchoredPosition: {x: 0.010009766, y: 0.55999756}
   m_SizeDelta: {x: 165.7253, y: 25.2482}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &4288914761774629311
@@ -102,7 +102,7 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &4288914761774629310
+--- !u!114 &4110233370026113721
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -111,12 +111,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 4288914761774629307}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 321179242328e474d960f133c7f5c3b4, type: 3}
+  m_Script: {fileID: 11500000, guid: 768e5ceae99eb4202b46d49b5cd24595, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   healthbar: {fileID: 4288914762674717153}
   brainbar: {fileID: 4288914763565589175}
-  maxBrain: 50
 --- !u!1 &4288914761789937357
 GameObject:
   m_ObjectHideFlags: 0

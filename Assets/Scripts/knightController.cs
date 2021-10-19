@@ -13,16 +13,32 @@ public class knightController : MonoBehaviour
 
     [SerializeField] private GameObject ZUIObj;
     private zombieUIController zombUICont;
+
+    private GameObject[] lostObjects;
     
     void Start()
     {
+        lostObjects = GameObject.FindGameObjectsWithTag("ShowwhenLost");
+        foreach (GameObject g in lostObjects)
+        {
+            g.SetActive(false);
+        }
+        
         UIscript = GetComponentInChildren<knightUIController>();
-        zombUICont = ZUIObj.GetComponentInChildren<zombieUIController>();
     }
     
     void Update()
     {
+        zombUICont = ZUIObj.GetComponent<zombieUIController>();
         moveKnight();
+        var check = UIscript.getHealth;
+        if (check == 0)
+        {
+            foreach (GameObject g in lostObjects)
+            {
+                g.SetActive(true);
+            }
+        }
     }
 
     //moves the knight character and sets animations
@@ -73,14 +89,34 @@ public class knightController : MonoBehaviour
     private void Attack()
     {
         anim.SetBool("isAttacking", true);
-        zombUICont.setHealth(-50);
+        //zombUICont.setHealth(-50);
+        Collider2D[] newvariable = Physics2D.OverlapCircleAll(transform.position, 1.25f);
+        foreach (Collider2D zombie in newvariable)
+        {
+            var controller = zombie.GetComponent<zombieController>();
+            if (controller == null)
+            {
+                continue;
+            }
+            controller.zombUIController.setHealth(-25);
+        }
     }
 
     //function to give brains to zombie to recruit
     private void giveBrain()
     {
+        Collider2D[] zombsSurrounding = Physics2D.OverlapCircleAll(transform.position, 1.25f);
+        foreach (Collider2D zombie in zombsSurrounding)
+        {
+            var controller = zombie.GetComponent<zombieController>();
+            if (controller == null)
+            {
+                continue;
+            }
+            controller.zombUIController.setBrain(25);
+        }
         UIscript.setBrain(-25);
-        zombUICont.setBrain(25);
+        //zombUICont.setBrain(25);
     }
     //detecting zombie collisions and assigning what happens
     private void OnCollisionStay2D(Collision2D other)

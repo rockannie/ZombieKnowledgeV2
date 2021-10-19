@@ -14,6 +14,8 @@ public class knightUIController : MonoBehaviour
     {
         healthbar.maxValue = maxHealth;
         brainbar.maxValue = maxBrain;
+        healthbar.value = 100;
+        brainbar.value = 100;
     }
     
     void Update()

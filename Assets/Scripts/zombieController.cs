@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using Random = UnityEngine.Random;
@@ -32,13 +33,19 @@ public class zombieController : MonoBehaviour
     }
 
     //gameobjects 
+    //public Score scorecontroller;
+    
     public Transform knight;
 
     public Tilemap walkableTilemap;
 
     public knightUIController KUIController;
 
-    private zombieUIController zombUIController;
+    public zombieUIController zombUIController
+    {
+        get;
+        private set;
+    }
     
     private Vector3 lastKnightPos;
 
@@ -57,6 +64,8 @@ public class zombieController : MonoBehaviour
             coroutinevar = value;
         }
     }
+
+    private float tempBrain;
 
     //setting up astar objects
     private Vector3Int[,] walkableArea;
@@ -95,7 +104,12 @@ public class zombieController : MonoBehaviour
     
     void Start()
     {
+        //accessing zombie UI controller
         zombUIController = GetComponentInChildren<zombieUIController>();
+        //accessing score controller
+        //GameObject go = GameObject.Find("score");
+        //scorecontroller = go.GetComponent<Score>();
+        
         //tilemap a* set-up
         lastKnightPos = knight.position;
         walkableTilemap.CompressBounds();
@@ -163,12 +177,18 @@ public class zombieController : MonoBehaviour
     private void FixedUpdate()
     {
         lastKnightPos = knight.position;
+        //tempBrain = zombUIController.getBrain;
+        //if (tempBrain == 100)
+        //{
+            //StateEnum = State.BeFriend;
+            //update score?? 
+        //}
     }
 
     private void Idling()
     {
-        if (knight.position != lastKnightPos)
-        {
+        //if (knight.position != lastKnightPos)
+        //{
             roadPath = astar.CreatePath(walkableArea, GridPositionOfZombie, GridPositionOfRandom);
             if (roadPath == null)
             {
@@ -177,7 +197,7 @@ public class zombieController : MonoBehaviour
             }
             
             MovementCoroutine = StartCoroutine(keepMoving(roadPath));
-        }
+        //}
     }
 
     private void FindTarget()
@@ -219,21 +239,19 @@ public class zombieController : MonoBehaviour
 
     private void AttackKnight()
     {
-        KUIController.setHealth(-10);
+        KUIController.setHealth(-1);
         float startChasing = 1f;
         if (Vector3.Distance(transform.position, knight.position) > startChasing)
         {
             StateEnum = State.ChaseTarget;
         }
+
+        //StartCoroutine(Attack(startChasing));
     }
 
     private void BeFriend()
     {
-        float tempBrain = zombUIController.getBrain;
-        if (tempBrain < 50)
-        {
-            StateEnum = State.Idle;
-        }
+        //scorecontroller.setScore();
         //use astar to follow knight but the astar thing isn't working so fuck it
         //transform.position = knight.transform.position;
     }
@@ -247,4 +265,13 @@ public class zombieController : MonoBehaviour
             yield return new WaitForSeconds(.3f);
         }
     }
+
+    /*IEnumerator Attack(float distance)
+    {
+        while (distance < 1f)
+        {
+            KUIController.setHealth(-5);
+            yield return new WaitForSeconds(1f);
+        }
+    }*/
 }
